@@ -86,7 +86,7 @@ const VehiclePage = ({ setJobCard }) => {
         <div>
           <label>Customer Number: *</label>
           <input
-            type="text"
+            type="number"
             value={customerNumber}
             onChange={(e) => setCustomerNumber(e.target.value)}
             required
@@ -95,7 +95,7 @@ const VehiclePage = ({ setJobCard }) => {
         <div>
           <label>Calling Number:</label>
           <input
-            type="text"
+            type="number"
             value={callingNumber}
             onChange={(e) => setCallingNumber(e.target.value)}
           />
