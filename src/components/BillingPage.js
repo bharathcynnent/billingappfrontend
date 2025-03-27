@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import './Invoice.css';
 
 const BillingPage = ({ jobCard }) => {
   const navigate = useNavigate();
@@ -11,29 +12,32 @@ const BillingPage = ({ jobCard }) => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [showInvoice, setShowInvoice] = useState(false);
 
-  // Redirect to VehiclePage if jobCard is null
   if (!jobCard) {
     navigate('/');
     return null;
   }
 
-  // Handlers for adding and updating services
   const handleServiceChange = (index, field, value) => {
     const updatedServices = services.map((service, i) =>
-      i === index ? { ...service, [field]: field === 'amount' ? parseFloat(value) || 0 : value } : service
+      i === index
+        ? {
+            ...service,
+            [field]: field === 'amount' || field === 'quantity' ? parseFloat(value) || 0 : value,
+          }
+        : service
     );
     setServices(updatedServices);
   };
-
+  
   const handleAddService = () => {
-    setServices([...services, { name: '', amount: 0 }]);
+    setServices([...services, { name: '', amount: 0, quantity: 1 }]); // Default quantity to 1
   };
-
+  
   const calculateTotalAmount = () => {
-    const total = services.reduce((sum, service) => sum + service.amount, 0);
+    const total = services.reduce((sum, service) => sum + service.amount * service.quantity, 0);
     setTotalAmount(total);
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     calculateTotalAmount();
@@ -56,197 +60,270 @@ const BillingPage = ({ jobCard }) => {
       pdf.save(`Invoice_${jobCard.vehicleNumber}_${invoiceDate}.pdf`);
     });
   };
+  
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Billing Information</h2>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Billing Information</h2>
 
       {/* Display all job card details for verification */}
-      <table
-        border="1"
-        cellPadding="5"
-        cellSpacing="0"
-        style={{ width: '100%', marginBottom: '20px', borderCollapse: 'collapse' }}
-      >
+<table className="bike-table">
+      <tbody>
+        <tr className="header-row">
+          <td><strong>Vehicle Number:</strong></td>
+          <td>{jobCard.vehicleNumber}</td>
+        </tr>
+        <tr>
+          <td><strong>Vehicle Brand:</strong></td>
+          <td>{jobCard.vehicleBrand}</td>
+        </tr>
+        <tr className="alt-row">
+          <td><strong>Vehicle Model:</strong></td>
+          <td>{jobCard.vehicleModel}</td>
+        </tr>
+        <tr>
+          <td><strong>Fuel Type:</strong></td>
+          <td>{jobCard.fuelType}</td>
+        </tr>
+        <tr className="alt-row">
+          <td><strong>Customer Name:</strong></td>
+          <td>{jobCard.customerName}</td>
+        </tr>
+        <tr>
+          <td><strong>Customer Number:</strong></td>
+          <td>{jobCard.customerNumber}</td>
+        </tr>
+        <tr className="alt-row">
+          <td><strong>Calling Number:</strong></td>
+          <td>{jobCard.callingNumber || "N/A"}</td>
+        </tr>
+        <tr>
+          <td><strong>Address:</strong></td>
+          <td>{jobCard.address || "N/A"}</td>
+        </tr>
+        <tr className="alt-row">
+          <td><strong>Email:</strong></td>
+          <td>{jobCard.email || "N/A"}</td>
+        </tr>
+        <tr>
+          <td><strong>Remarks:</strong></td>
+          <td>{jobCard.remarks}</td>
+        </tr>
+      </tbody>
+    </table>
+     
+<form onSubmit={handleSubmit} className="invoice-form">
+      <div className="form-group">
+        <label><strong>Invoice Date:</strong></label>
+        <input
+          type="date"
+          value={invoiceDate}
+          onChange={(e) => setInvoiceDate(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <button type="button" onClick={handleAddService} className="add-service-btn">
+          Add Service
+        </button>
+      </div>
+
+      {services.map((service, index) => (
+        <div key={index} className="service-group">
+          <label><strong>Service Name:</strong></label>
+          <input
+            type="text"
+            value={service.name}
+            onChange={(e) => handleServiceChange(index, "name", e.target.value)}
+            required
+          />
+
+          <label><strong>Amount:</strong></label>
+          <input
+            type="number"
+            value={service.amount}
+            onChange={(e) => handleServiceChange(index, "amount", e.target.value)}
+            required
+          />
+
+          <label><strong>Quantity:</strong></label>
+          <input
+            type="number"
+            value={service.quantity}
+            onChange={(e) => handleServiceChange(index, "quantity", e.target.value)}
+            required
+          />
+        </div>
+      ))}
+
+      <button type="submit" className="submit-btn">
+        Calculate Total
+      </button>
+
+      <h3 className="total-amount">Total Amount: ₹{totalAmount}</h3>
+    </form>
+
+      <button onClick={handleGenerateBill} style={{ padding: '10px 20px', backgroundColor: '#17a2b8', color: '#fff', border: 'none', borderRadius: '5px' }}>
+        Generate Bill
+      </button>
+      {/* {showInvoice && (
+  <div
+    id="invoice"
+  >
+    <h2>
+      Ganesh Motor Works
+    </h2>
+    <h4>
+      Phone: 9360652355
+    </h4>
+    <hr />
+    <div >
+      <div>
+        <div >
+        <div>
+          <strong>Work performed by:</strong> <p>Santhosh</p>
+        </div>
+          <h3 className='customerheading'>Customer Info</h3>
+          <strong>Customer Name:</strong> {jobCard.customerName}
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <strong>Customer Number:</strong> {jobCard.customerNumber}
+        </div>
+      </div>
+      <div >
+        <div>
+          <strong>Invoice Date:</strong> {invoiceDate}
+        </div>
+        <h3 className='vehicleheading'>Vehicle Info</h3>
+        <div>
+          <strong>Vehicle Number:</strong> {jobCard.vehicleNumber}
+        </div>
+        <div>
+          <strong>Vehicle Brand:</strong> {jobCard.vehicleBrand}
+        </div>
+        <div >
+          <strong>Vehicle Model:</strong> {jobCard.vehicleModel}
+        </div>
+        <div >
+          <strong>Fuel Type:</strong> {jobCard.fuelType}
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <strong>Services:</strong>
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Service Name</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Total</th>
+          </tr>
+        </thead>
         <tbody>
+          {services.map((service, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{service.name}</td>
+              <td>{service.quantity}</td>
+              <td>{service.amount}</td>
+              <td>{service.quantity * service.amount}</td>
+            </tr>
+          ))}
           <tr>
-            <td><strong>Vehicle Number:</strong></td>
-            <td>{jobCard.vehicleNumber}</td>
-          </tr>
-          <tr>
-            <td><strong>Vehicle Brand:</strong></td>
-            <td>{jobCard.vehicleBrand}</td>
-          </tr>
-          <tr>
-            <td><strong>Vehicle Model:</strong></td>
-            <td>{jobCard.vehicleModel}</td>
-          </tr>
-          <tr>
-            <td><strong>Fuel Type:</strong></td>
-            <td>{jobCard.fuelType}</td>
-          </tr>
-          <tr>
-            <td><strong>Customer Name:</strong></td>
-            <td>{jobCard.customerName}</td>
-          </tr>
-          <tr>
-            <td><strong>Customer Number:</strong></td>
-            <td>{jobCard.customerNumber}</td>
-          </tr>
-          <tr>
-            <td><strong>Calling Number:</strong></td>
-            <td>{jobCard.callingNumber || 'N/A'}</td>
-          </tr>
-          <tr>
-            <td><strong>Address:</strong></td>
-            <td>{jobCard.address || 'N/A'}</td>
-          </tr>
-          <tr>
-            <td><strong>Email:</strong></td>
-            <td>{jobCard.email || 'N/A'}</td>
+            <td>
+              <strong>Total Amount:</strong>
+            </td>
+            <td>
+              <strong>₹{totalAmount}</strong>
+            </td>
           </tr>
         </tbody>
       </table>
+    </div>
 
-      {/* Service and billing form */}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '20px' }}>
-          <label><strong>Invoice Date:</strong></label>
-          <input
-            type="date"
-            value={invoiceDate}
-            onChange={(e) => setInvoiceDate(e.target.value)}
-            required
-            style={{ marginLeft: '10px', padding: '5px' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <button type="button" onClick={handleAddService} style={{ padding: '10px 20px' }}>
-            Add Service
-          </button>
-        </div>
-
-        {services.map((service, index) => (
-          <div key={index} style={{ display: 'flex', marginBottom: '10px' }}>
-            <input
-              type="text"
-              placeholder="Service Name"
-              value={service.name}
-              onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
-              required
-              style={{ flex: '2', padding: '5px', marginRight: '10px' }}
-            />
-            <input
-              type="number"
-              placeholder="Amount"
-              value={service.amount}
-              onChange={(e) => handleServiceChange(index, 'amount', e.target.value)}
-              required
-              style={{ flex: '1', padding: '5px' }}
-            />
-          </div>
-        ))}
-
-        <div style={{ marginBottom: '20px' }}>
-          <label><strong>Total Amount:</strong></label>
-          <input
-            type="number"
-            value={totalAmount}
-            readOnly
-            style={{ marginLeft: '10px', padding: '5px' }}
-          />
-        </div>
-
+    <button
+      onClick={handleDownloadInvoice} className="exclude-from-pdf">
+      Download Invoice as PDF
+    </button>
+  </div>
+)} */}
+{showInvoice && (
+  <div id="invoice">
+    <div id="invoice-content">  {/* New wrapper div for PDF capture */}
+      <h2>Ganesh Motor Works</h2>
+      <h4>Phone: 9360652355</h4>
+      <hr />
+      <div>
         <div>
-          <button type="submit" style={{ padding: '10px 20px', marginRight: '10px' }}>
-            Calculate Total
-          </button>
-          <button
-            type="button"
-            onClick={handleGenerateBill}
-            disabled={services.length === 0 || !invoiceDate}
-            style={{ padding: '10px 20px', marginRight: '10px' }}
-          >
-            Generate Invoice
-          </button>
-          {showInvoice && (
-            <button type="button" onClick={handleDownloadInvoice} style={{ padding: '10px 20px' }}>
-              Download Invoice
-            </button>
-          )}
-        </div>
-      </form>
-
-      {/* Invoice display */}
-      {showInvoice && (
-        <div
-          id="invoice"
-          style={{
-            marginTop: '40px',
-            padding: '20px',
-            border: '2px solid #000',
-            maxWidth: '800px',
-            margin: '40px auto',
-            fontFamily: 'Arial, sans-serif',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h2>Ganesh Motor Works</h2>
-            <p>Phone: 9360652355</p>
-            <p>Date: {new Date(invoiceDate).toLocaleDateString()}</p>
-          </div>
-
-          <hr />
-
-          <div style={{ marginBottom: '20px' }}>
-            <h3>Customer Information</h3>
-            <p><strong>Name:</strong> {jobCard.customerName}</p>
-            <p><strong>Phone:</strong> {jobCard.customerNumber}</p>
-          </div>
-
-          <div style={{ marginBottom: '20px' }}>
-            <h3>Vehicle Information</h3>
-            <p><strong>Vehicle Number:</strong> {jobCard.vehicleNumber}</p>
-            <p><strong>Brand:</strong> {jobCard.vehicleBrand}</p>
-            <p><strong>Model:</strong> {jobCard.vehicleModel}</p>
-            <p><strong>Fuel Type:</strong> {jobCard.fuelType}</p>
-          </div>
-
           <div>
-            <h3>Services Provided</h3>
-            <table
-              border="1"
-              cellPadding="5"
-              cellSpacing="0"
-              style={{ width: '100%', borderCollapse: 'collapse' }}
-            >
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left' }}>Service Name</th>
-                  <th style={{ textAlign: 'right' }}>Amount (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {services.map((service, index) => (
-                  <tr key={index}>
-                    <td>{service.name}</td>
-                    <td style={{ textAlign: 'right' }}>{service.amount.toFixed(2)}</td>
-                  </tr>
-                ))}
-                <tr>
-                  <td><strong>Total</strong></td>
-                  <td style={{ textAlign: 'right' }}><strong>₹{totalAmount.toFixed(2)}</strong></td>
-                </tr>
-              </tbody>
-            </table>
+            <strong>Work performed by:</strong> <p>Santhosh</p>
           </div>
-
-          <div style={{ textAlign: 'center', marginTop: '40px' }}>
-            <p>Thank you for choosing Ganesh Motor Works!</p>
-          </div>
+          <h3 className='customerheading'>Customer Info</h3>
+          <strong>Customer Name:</strong> {jobCard.customerName}
         </div>
-      )}
+        <div style={{ marginBottom: '10px' }}>
+          <strong>Customer Number:</strong> {jobCard.customerNumber}
+        </div>
+      </div>
+      <div>
+        <div>
+          <strong>Invoice Date:</strong> {invoiceDate}
+        </div>
+        <h3 className='vehicleheading'>Vehicle Info</h3>
+        <div>
+          <strong>Vehicle Number:</strong> {jobCard.vehicleNumber}
+        </div>
+        <div>
+          <strong>Vehicle Brand:</strong> {jobCard.vehicleBrand}
+        </div>
+        <div>
+          <strong>Vehicle Model:</strong> {jobCard.vehicleModel}
+        </div>
+        <div>
+          <strong>Fuel Type:</strong> {jobCard.fuelType}
+        </div>
+      </div>
+      <div>
+        <strong>Services:</strong>
+        <table>
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Service Name</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {services.map((service, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{service.name}</td>
+                <td>{service.quantity}</td>
+                <td>{service.amount}</td>
+                <td>{service.quantity * service.amount}</td>
+              </tr>
+            ))}
+            <tr>
+              <td><strong>Total Amount:</strong></td>
+              <td><strong>₹{totalAmount}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div> {/* End of new wrapper div */}
+
+    {/* Button outside the invoice content */}
+    <button onClick={handleDownloadInvoice}>
+      Download Invoice as PDF
+    </button>
+  </div>
+)}
     </div>
   );
 };

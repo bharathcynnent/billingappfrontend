@@ -1,0 +1,170 @@
+/* Global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Container */
+  .vehicle-container {
+    width: 90%;
+    max-width: 500px; /* Keeps it compact for mobile */
+    margin: 20px auto;
+    padding: 15px;
+    background: #222;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Heading */
+  .vehicle-container h2 {
+    text-align: center;
+    color: #f39c12;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+  }
+  
+  /* Error text */
+  .error-text {
+    color: red;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Form */
+  .vehicle-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Form groups */
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  /* Input fields */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #555;
+    border-radius: 6px;
+    background: #333;
+    color: white;
+    transition: 0.3s ease-in-out;
+  }
+  
+  /* Input focus effect */
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #f39c12;
+    outline: none;
+  }
+  
+  /* Submit button */
+  .submit-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background: #f39c12;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  /* Button hover effect */
+  .submit-button:hover {
+    background: #e67e22;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .vehicle-container {
+      width: 95%;
+      padding: 12px;
+    }
+  
+    .vehicle-container h2 {
+      font-size: 1.2rem;
+    }
+  
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-size: 0.95rem;
+      padding: 10px;
+    }
+  
+    .submit-button {
+      font-size: 0.95rem;
+      padding: 10px;
+    }
+  }
+  .vehicle-container {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  .vehicle-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .vehicle-number-container {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .small-input {
+    width: 20%;
+    text-transform: uppercase;
+  }
+  
+  .medium-input {
+    width: 40%;
+  }
+  
+  .submit-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+.copy-button{
+    margin-left: 240px;
+    padding: 2px;
+    background-color: orange;
+    color: black;
+    font-weight: bold;
+}
