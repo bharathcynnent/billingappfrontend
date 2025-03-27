@@ -48,25 +48,55 @@ const BillingPage = ({ jobCard }) => {
     setShowInvoice(true);
   };
 
+  // const handleDownloadInvoice = () => {
+  //   const invoice = document.getElementById('invoice');
+  //   const button = invoice.querySelector('button');
+  //   if (button) button.style.display = 'none';
+  //   html2canvas(invoice).then((canvas) => {
+  //     const imgData = canvas.toDataURL('image/png');
+  //     const pdf = new jsPDF();
+  //     const imgProps = pdf.getImageProperties(canvas);
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  //     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save(`Invoice_${jobCard.customerName}_${jobCard.vehicleNumber}_${invoiceDate}.pdf`);
+  //     if (button) button.style.display = 'block';
+  //   });
+  // };
+
+  
   const handleDownloadInvoice = () => {
-    const invoice = document.getElementById('invoice');
-    html2canvas(invoice).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgProps = pdf.getImageProperties(canvas);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Invoice_${jobCard.vehicleNumber}_${invoiceDate}.pdf`);
+    const invoice = document.getElementById("invoice");
+    const button = invoice.querySelector("button");
+  
+    if (button) button.style.display = "none"; // Hide button before capture
+  
+    html2canvas(invoice, {
+      backgroundColor: "#fff",
+      scale: 2, // High resolution
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+  
+      // Get exact content height in mm for accurate PDF size
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Adjust height proportionally
+  
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: [imgWidth, imgHeight], // Set PDF size to match content
+      });
+  
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save(`Invoice_${jobCard.customerName}_${jobCard.vehicleNumber}_${invoiceDate}.pdf`);
+  
+      if (button) button.style.display = "block"; // Show button after capture
     });
   };
   
-
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Billing Information</h2>
-
-      {/* Display all job card details for verification */}
 <table className="bike-table">
       <tbody>
         <tr className="header-row">
@@ -167,93 +197,9 @@ const BillingPage = ({ jobCard }) => {
       <button onClick={handleGenerateBill} style={{ padding: '10px 20px', backgroundColor: '#17a2b8', color: '#fff', border: 'none', borderRadius: '5px' }}>
         Generate Bill
       </button>
-      {/* {showInvoice && (
-  <div
-    id="invoice"
-  >
-    <h2>
-      Ganesh Motor Works
-    </h2>
-    <h4>
-      Phone: 9360652355
-    </h4>
-    <hr />
-    <div >
-      <div>
-        <div >
-        <div>
-          <strong>Work performed by:</strong> <p>Santhosh</p>
-        </div>
-          <h3 className='customerheading'>Customer Info</h3>
-          <strong>Customer Name:</strong> {jobCard.customerName}
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <strong>Customer Number:</strong> {jobCard.customerNumber}
-        </div>
-      </div>
-      <div >
-        <div>
-          <strong>Invoice Date:</strong> {invoiceDate}
-        </div>
-        <h3 className='vehicleheading'>Vehicle Info</h3>
-        <div>
-          <strong>Vehicle Number:</strong> {jobCard.vehicleNumber}
-        </div>
-        <div>
-          <strong>Vehicle Brand:</strong> {jobCard.vehicleBrand}
-        </div>
-        <div >
-          <strong>Vehicle Model:</strong> {jobCard.vehicleModel}
-        </div>
-        <div >
-          <strong>Fuel Type:</strong> {jobCard.fuelType}
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <strong>Services:</strong>
-      <table>
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Service Name</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {services.map((service, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{service.name}</td>
-              <td>{service.quantity}</td>
-              <td>{service.amount}</td>
-              <td>{service.quantity * service.amount}</td>
-            </tr>
-          ))}
-          <tr>
-            <td>
-              <strong>Total Amount:</strong>
-            </td>
-            <td>
-              <strong>₹{totalAmount}</strong>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <button
-      onClick={handleDownloadInvoice} className="exclude-from-pdf">
-      Download Invoice as PDF
-    </button>
-  </div>
-)} */}
 {showInvoice && (
   <div id="invoice">
-    <div id="invoice-content">  {/* New wrapper div for PDF capture */}
+    <div id="invoice-content">
       <h2>Ganesh Motor Works</h2>
       <h4>Phone: 9360652355</h4>
       <hr />
@@ -316,9 +262,7 @@ const BillingPage = ({ jobCard }) => {
           </tbody>
         </table>
       </div>
-    </div> {/* End of new wrapper div */}
-
-    {/* Button outside the invoice content */}
+    </div>
     <button onClick={handleDownloadInvoice}>
       Download Invoice as PDF
     </button>

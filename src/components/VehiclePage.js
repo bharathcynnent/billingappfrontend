@@ -4,6 +4,7 @@ import './vehiclepage.css';
 
 const VehiclePage = ({ setJobCard }) => {
   const [stateCode, setStateCode] = useState("");
+  const [stateCodeNumber, setstateCodeNumber] = useState("");
   const [regionalCode, setRegionalCode] = useState("");
   const [vehicleNumber, setVehicleNumber] = useState("");
   const [vehicleBrand, setVehicleBrand] = useState("");
@@ -37,6 +38,9 @@ const VehiclePage = ({ setJobCard }) => {
 
     if (!stateCode.match(/^[A-Z]{2}$/)) {
       errors.stateCode = "State code should be 2 uppercase letters (e.g., TN).";
+    }
+    if (!stateCodeNumber.match(/^\d{2}$/)) {
+      errors.stateCodeNumber = "State code Number should be 2 digits (e.g., 19).";
     }
 
     if (!regionalCode.match(/^[A-Z]{2}$/)) {
@@ -73,7 +77,7 @@ const VehiclePage = ({ setJobCard }) => {
     }
 
     const jobCard = {
-      vehicleNumber: `${stateCode} ${regionalCode} ${vehicleNumber}`,
+      vehicleNumber: `${stateCode} ${stateCodeNumber} ${regionalCode} ${vehicleNumber}`,
       vehicleBrand,
       vehicleModel,
       customerName,
@@ -110,6 +114,15 @@ const VehiclePage = ({ setJobCard }) => {
               type="text"
               maxLength="2"
               className="small-input"
+              value={stateCodeNumber}
+              onChange={(e) => handleNumericInput(e, setstateCodeNumber)}
+              placeholder="19"
+              required
+            />
+            <input
+              type="text"
+              maxLength="2"
+              className="small-input"
               value={regionalCode}
               onChange={(e) => setRegionalCode(e.target.value.toUpperCase())}
               placeholder="AR"
@@ -126,6 +139,7 @@ const VehiclePage = ({ setJobCard }) => {
             />
           </div>
           {fieldErrors.stateCode && <p className="error-text">{fieldErrors.stateCode}</p>}
+          {fieldErrors.stateCodeNumber && <p className="error-text">{fieldErrors.stateCodeNumber}</p>}
           {fieldErrors.regionalCode && <p className="error-text">{fieldErrors.regionalCode}</p>}
           {fieldErrors.vehicleNumber && <p className="error-text">{fieldErrors.vehicleNumber}</p>}
         </div>
@@ -136,6 +150,7 @@ const VehiclePage = ({ setJobCard }) => {
             type="text"
             value={vehicleBrand}
             onChange={(e) => setVehicleBrand(e.target.value)}
+            placeholder="Yamaha"
             required
           />
         </div>
@@ -145,6 +160,7 @@ const VehiclePage = ({ setJobCard }) => {
           <input
             type="text"
             value={vehicleModel}
+            placeholder="Mt 15"
             onChange={(e) => setVehicleModel(e.target.value)}
             required
           />
@@ -155,6 +171,7 @@ const VehiclePage = ({ setJobCard }) => {
           <input
             type="text"
             value={customerName}
+            placeholder="santhosh"
             onChange={(e) => setCustomerName(e.target.value)}
             required
           />
@@ -165,6 +182,7 @@ const VehiclePage = ({ setJobCard }) => {
           <input
             type="tel"
             maxLength="10"
+            placeholder="9876543210"
             value={customerNumber}
             onChange={(e) => handleNumericInput(e, setCustomerNumber)}
             required
@@ -179,6 +197,7 @@ const VehiclePage = ({ setJobCard }) => {
           <div className="calling-number-container">
             <input
               type="tel"
+              placeholder="9876543210"
               maxLength="10"
               value={callingNumber}
               onChange={(e) => handleNumericInput(e, setCallingNumber)}
@@ -193,7 +212,7 @@ const VehiclePage = ({ setJobCard }) => {
 
         <div className="form-group">
           <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" placeholder="abc@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           {fieldErrors.email && <p className="error-text">{fieldErrors.email}</p>}
         </div>
 
@@ -209,7 +228,7 @@ const VehiclePage = ({ setJobCard }) => {
 
         <div className="form-group">
           <label>Remarks: *</label>
-          <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} required />
+          <textarea value={remarks} placeholder="engine oil, break pad, etc..." onChange={(e) => setRemarks(e.target.value)} required />
         </div>
 
         <button type="submit" className="submit-button">

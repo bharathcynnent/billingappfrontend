@@ -124,25 +124,6 @@ input {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* /////////////////////////////////////////////////////////////////////////// */
 /* Invoice Container - Styled like a Real Receipt */
 #invoice {
@@ -277,7 +258,6 @@ hr {
       box-shadow: none;
       width: 320px;
       font-size: 12px;
-      background-image: none; /* Hide bike shadow when printing */
   }
 
   #invoice button {
