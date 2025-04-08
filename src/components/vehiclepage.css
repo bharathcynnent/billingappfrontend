@@ -169,3 +169,25 @@
     font-weight: bold;
     border-radius: 30px;
 }
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+  border: 1px solid #ccc;
+  max-height: 120px;
+  overflow-y: auto;
+  background: black;
+  position: absolute;
+  z-index: 10;
+  width: 90%;
+}
+
+.suggestions-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions-list li:hover {
+  background-color: #e67e22;
+}

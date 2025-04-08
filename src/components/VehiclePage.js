@@ -1,6 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './vehiclepage.css';
+const vehicleBrandsList = [
+  "Yamaha", 
+  "Honda", 
+  "Hero", 
+  "TVS", 
+  "Suzuki", 
+  "Royal Enfield",
+  "Bajaj",
+  "KTM",
+  "Mahindra",
+  "BMW",
+];
+
+const vehicleModelsList = {
+  Yamaha: ["FZ", "R15", "MT 15", "Fascino", "Ray ZR"],
+  Honda: ["Unicorn", "CB Shine", "Activa", "Hornet", "Dio"],
+  Hero: ["Splendor", "Glamour", "HF Deluxe", "Xtreme", "Pleasure"],
+  TVS: ["Apache", "Jupiter", "Ntorq", "Radeon", "XL 100"],
+  Suzuki: ["Access", "Gixxer", "Burgman", "Avenis", "Hayate"],
+  "Royal Enfield": ["Classic 350", "Hunter", "Bullet", "Meteor 350", "Himalayan"],
+  Bajaj: ["Pulsar", "Avenger", "Platina", "CT 100", "Dominar"],
+  KTM: ["Duke 200", "RC 200", "Duke 390", "RC 390", "Adventure 250"],
+  Mahindra: ["Gusto", "Centuro", "Mojo"],
+  BMW: ["G 310 R", "G 310 GS", "S 1000 RR"],
+};
 
 const VehiclePage = ({ setJobCard }) => {
   const [stateCode, setStateCode] = useState("");
@@ -18,6 +43,8 @@ const VehiclePage = ({ setJobCard }) => {
   const [remarks, setRemarks] = useState("");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [brandSuggestions, setBrandSuggestions] = useState([]);
+  const [modelSuggestions, setModelSuggestions] = useState([]);
 
   const navigate = useNavigate();
 
@@ -143,28 +170,75 @@ const VehiclePage = ({ setJobCard }) => {
           {fieldErrors.regionalCode && <p className="error-text">{fieldErrors.regionalCode}</p>}
           {fieldErrors.vehicleNumber && <p className="error-text">{fieldErrors.vehicleNumber}</p>}
         </div>
-
         <div className="form-group">
-          <label>Vehicle Brand: *</label>
-          <input
-            type="text"
-            value={vehicleBrand}
-            onChange={(e) => setVehicleBrand(e.target.value)}
-            placeholder="Yamaha"
-            required
-          />
-        </div>
+  <label>Vehicle Brand: *</label>
+  <input
+    type="text"
+    value={vehicleBrand}
+    onChange={(e) => {
+      const value = e.target.value;
+      setVehicleBrand(value);
+      const filtered = vehicleBrandsList.filter((brand) =>
+        brand.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setBrandSuggestions(filtered);
+    }}
+    placeholder="Yamaha"
+    required
+    autoComplete="off"
+  />
+  {brandSuggestions.length > 0 && (
+    <ul className="suggestions-list">
+      {brandSuggestions.map((brand, idx) => (
+        <li
+          key={idx}
+          onClick={() => {
+            setVehicleBrand(brand);
+            setBrandSuggestions([]);
+            setVehicleModel(""); // Clear model when brand changes
+          }}
+        >
+          {brand}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
-        <div className="form-group">
-          <label>Vehicle Model: *</label>
-          <input
-            type="text"
-            value={vehicleModel}
-            placeholder="Mt 15"
-            onChange={(e) => setVehicleModel(e.target.value)}
-            required
-          />
-        </div>
+<div className="form-group">
+  <label>Vehicle Model: *</label>
+  <input
+    type="text"
+    value={vehicleModel}
+    onChange={(e) => {
+      const value = e.target.value;
+      setVehicleModel(value);
+      const models = vehicleModelsList[vehicleBrand] || [];
+      const filtered = models.filter((model) =>
+        model.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setModelSuggestions(filtered);
+    }}
+    placeholder="MT 15"
+    required
+    autoComplete="off"
+  />
+  {modelSuggestions.length > 0 && (
+    <ul className="suggestions-list">
+      {modelSuggestions.map((model, idx) => (
+        <li
+          key={idx}
+          onClick={() => {
+            setVehicleModel(model);
+            setModelSuggestions([]);
+          }}
+        >
+          {model}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
         <div className="form-group">
           <label>Customer Name: *</label>
